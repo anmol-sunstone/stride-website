@@ -757,21 +757,20 @@
       return;
     }
 
-    // Submit to Google Sheets
+    // Submit via Netlify Function (captures IP server-side)
     console.log('Submitting email:', email);
 
-    fetch('https://script.google.com/macros/s/AKfycbzRw7QTS9oKnm0gVTNRqAiXgOzljDk5JefFtIwaNHXh_dHePCbYwkAr3tE6aynVvbHuCg/exec', {
+    fetch('/.netlify/functions/submit-email', {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: email,
-        userAgent: navigator.userAgent,
-        ip: 'client-side' // Server will capture actual IP
+        userAgent: navigator.userAgent
       })
     })
-    .then(() => {
-      console.log('Request sent successfully (no-cors mode)');
+    .then(response => response.json())
+    .then(data => {
+      console.log('Submission successful:', data);
       emailForm.classList.add('success');
     })
     .catch((err) => {
